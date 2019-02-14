@@ -95,6 +95,8 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.DataOutputStream;
 import java.net.ProtocolException;
 import java.security.interfaces.RSAPublicKey;
@@ -124,6 +126,11 @@ public class ObjectAction extends ActionSupport implements ServletRequestAware, 
     private String generatorID = "unknown";
     private final ObjectMapper mapper = new ObjectMapper();
     private CacheAccess<String, RSAPublicKey> cache = null;
+    private GsonBuilder builder = new GsonBuilder();
+    private Gson gson =  builder.serializeNulls().setPrettyPrinting().create(); //Our global serializer for JSON
+    
+
+    private String httpOut = "";
    /**
     * Private function to get information from the rerum properties file
     
@@ -1205,7 +1212,13 @@ public class ObjectAction extends ActionSupport implements ServletRequestAware, 
                     response.addHeader("Access-Control-Allow-Origin", "*");
                     response.setStatus(HttpServletResponse.SC_OK);
                     out = response.getWriter();
-                    out.write(mapper.writer().withDefaultPrettyPrinter().writeValueAsString(jo));
+                    System.out.println("What is this json before it is serialized");
+                    System.out.println(jo);
+                    httpOut = gson.toJson(jo);
+                    System.out.println("What is this json before after it serialized to a string for the OutputStream");
+                    System.out.println(httpOut);
+                    out.write(httpOut);
+                    System.out.println("Get by ID wrote out!");
                 } 
                 catch (IOException ex){
                     Logger.getLogger(ObjectAction.class.getName()).log(Level.SEVERE, null, ex);

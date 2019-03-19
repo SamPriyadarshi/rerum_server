@@ -190,6 +190,7 @@ public class ObjectAction extends ActionSupport implements ServletRequestAware, 
                     sb.append(line);
                 }
                 reader.close();
+                connection.disconnect();
                 jsonReturn = JSONObject.fromObject(sb.toString());
                 out = response.getWriter();
                 response.setStatus(HttpServletResponse.SC_OK);
@@ -256,6 +257,7 @@ public class ObjectAction extends ActionSupport implements ServletRequestAware, 
                     sb.append(line);
                 }
                 reader.close();
+                connection.disconnect();
                 jsonReturn = JSONObject.fromObject(sb.toString());
                 out = response.getWriter();
                 response.setStatus(HttpServletResponse.SC_OK);
@@ -473,6 +475,7 @@ public class ObjectAction extends ActionSupport implements ServletRequestAware, 
      */
     private boolean alterHistoryNext (String idForUpdate, String newNextID){
         //TODO @theHabes As long as we trust the objects we send to this, we can take out the lookup and pass in objects as parameters
+        System.out.println("Trying to alter history...");
         Boolean altered = false;
         BasicDBObject query = new BasicDBObject();
         query.append("@id", idForUpdate);
@@ -483,15 +486,19 @@ public class ObjectAction extends ActionSupport implements ServletRequestAware, 
             try{
                 annoToUpdate.getJSONObject("__rerum").getJSONObject("history").getJSONArray("next").add(newNextID); //write back to the anno from mongo
                 myAnnoWithHistoryUpdate = (DBObject)JSON.parse(annoToUpdate.toString()); //make the JSONObject a DB object
+                System.out.println("Update in Mongo");
                 mongoDBService.update(Constant.COLLECTION_ANNOTATION, myAnno, myAnnoWithHistoryUpdate); //update in mongo
+                System.out.println("Done");
                 altered = true;
             }
             catch(Exception e){ 
                 //@cubap @theHabes #44.  What if obj does not have __rerum or __rerum.history
+                System.out.println("This object did not have a propery history...");
                 writeErrorResponse("This object does not contain the proper history property.  It may not be from RERUM, the update failed.", HttpServletResponse.SC_CONFLICT);
             }
         }
         else{ //THIS IS A 404
+            System.out.println("Couldnt find the object to alter history...");
             writeErrorResponse("Object for update not found...", HttpServletResponse.SC_NOT_FOUND);
         }
         return altered;
@@ -737,7 +744,7 @@ public class ObjectAction extends ActionSupport implements ServletRequestAware, 
                     restful = true;
                 }
                 else{
-                    writeErrorResponse("Improper request method for the Auth0 proxy, please use post.", HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+                    writeErrorResponse("Improper request method for the Auth0 proxy, please use POST.", HttpServletResponse.SC_METHOD_NOT_ALLOWED);
                 }
             break;
             case "getProps":
@@ -753,7 +760,7 @@ public class ObjectAction extends ActionSupport implements ServletRequestAware, 
             default:
                 writeErrorResponse("Improper request method for this type of request (unknown).", HttpServletResponse.SC_METHOD_NOT_ALLOWED);
         }   
-        System.out.println("Method approved? "+restful);
+        System.out.println(request_type+ " approved? "+restful);
         return restful;
     }
     
@@ -911,6 +918,8 @@ public class ObjectAction extends ActionSupport implements ServletRequestAware, 
             }
         }
         */
+        reader.close();
+        input.close();
         content = requestBody;
         response.setContentType("application/json; charset=utf-8"); // We create JSON objects for the return body in most cases.  
         response.addHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -1263,8 +1272,6 @@ public class ObjectAction extends ActionSupport implements ServletRequestAware, 
                 itemToAdd.remove("forkFromID"); // retained for legacy v0 objects
                 itemToAdd.remove("serverName");// retained for legacy v0 objects
                 itemToAdd.remove("serverIP");// retained for legacy v0 objects
-                System.out.println("Item to add to response:");
-                System.out.println(itemToAdd);
                 ja.add((BasicDBObject) itemToAdd);
             }
             try {
@@ -1354,7 +1361,7 @@ public class ObjectAction extends ActionSupport implements ServletRequestAware, 
     public void saveNewObject() throws IOException, ServletException, Exception{
         System.out.println("create object");
         if(null != processRequestBody(request, false) && methodApproval(request, "create")){
-            System.out.println("process and approval over.  actually save now");
+            //System.out.println("process and approval over.  actually save now");
             JSONObject received = JSONObject.fromObject(content);
             if(received.containsKey("@id") && !received.getString("@id").isEmpty()){
                 writeErrorResponse("Object already contains an @id "+received.containsKey("@id")+".  Either remove this property for saving or if it is a RERUM object update instead.", HttpServletResponse.SC_BAD_REQUEST);
@@ -1649,10 +1656,12 @@ public class ObjectAction extends ActionSupport implements ServletRequestAware, 
                             }
                         }
                         if(triedToSet){
+                            System.out.println("Patch meh 1");
                             //@cubap @theHabes We continued with what we could patch.  Do we tell the user at all?
                             //writeErrorResponse("A key you are trying to update does not exist on the object.  You can set with the patch_set or put_update action.", HttpServletResponse.SC_BAD_REQUEST);
                         }
                         else if(updateCount == 0){
+                            System.out.println("Patch meh 2");
                             addLocationHeader(received);
                             writeErrorResponse("Nothing could be PATCHed", HttpServletResponse.SC_NO_CONTENT);
                         }
@@ -2489,6 +2498,7 @@ public class ObjectAction extends ActionSupport implements ServletRequestAware, 
           stringBuilder.append(line);
         }
         connection.disconnect();
+        reader.close();
         jwksFile = JSONObject.fromObject(stringBuilder.toString());
         return jwksFile;
     }

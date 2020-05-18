@@ -1000,6 +1000,7 @@ public class ObjectAction extends ActionSupport implements ServletRequestAware, 
             // add to existing header
 //             addLocation = response.getHeader("Location").concat(",").concat(obj.getString("@id"));
          System.out.println("10 is less than 15"); 
+         addLocation = obj.getString("@id");
         }
         else {
             // no header attached yet

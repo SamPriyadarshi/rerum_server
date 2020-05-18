@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project basedir="." default="deploy" name="rerum_server">
+<project basedir="." default="package" name="rerum_server">
 	<property environment="env" />
 	<property name="project.classes.dir" value="build/classes" />
 	<property name="project.web.dir" value="web" />

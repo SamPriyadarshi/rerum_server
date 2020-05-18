@@ -22,3 +22,8 @@ jobs:
         java-version: 1.8
     - name: Build with Ant
       run: ant -noinput -buildfile build.xml
+    - name: upoad artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: Package
+        path: /home/runner/work//home/runner/work/rerum_server/rerum_server/rerum_server.war

@@ -26,4 +26,4 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: Package
-        path: /home/runner/work//home/runner/work/rerum_server/rerum_server/rerum_server.war
+        path: /home/runner/work/rerum_server/rerum_server/rerum_server.war

@@ -2,7 +2,7 @@
 <project name="rerum_server" default="war">
  
     <path id="compile.classpath">
-        <fileset dir="web/WEB-INF/lib">
+        <fileset dir="lib">
             <include name="*.jar"/>
         </fileset>
     </path>

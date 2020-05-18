@@ -38,7 +38,7 @@
             </condition>
         </fail>
     </target>
-    <target name="-deploy-ant" if="deploy.ant.enabled" depends="-init,-check-credentials">
+    <target name="-deploy-ant" depends="-init,-check-credentials">
         <echo message="Deploying ${deploy.ant.archive} to ${Context(path)}"/>
         <taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask"
                  classpath="${tomcat.home}/server/lib/catalina-ant.jar"/>

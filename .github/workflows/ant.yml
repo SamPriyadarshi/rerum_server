@@ -20,6 +20,16 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Copy files to S3 with the AWS CLI
+      run: |
+        aws s3 cp s3://samrealtimeinsightbucket/rerum.properties /home/runner/work/rerum_server/rerum_server/src/java/
     - name: Build with Ant
       run: ant -noinput -buildfile build.xml
     - name: upoad artifacts

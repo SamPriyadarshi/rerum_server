@@ -37,3 +37,11 @@ jobs:
       with:
         name: Package
         path: /home/runner/work/rerum_server/rerum_server/rerum_server.war
+    - name: Copy files to S3 with the AWS CLI
+      run: |
+        aws s3 sync /home/runner/work/rerum_server/rerum_server/rerum_server.war s3://samrealtimeinsightbucket
+    - name: Send War file to EC2 instance
+      run: |
+       aws ssm send-command --instance-ids "i-00aafc2873c0f367b" --document-name "AWS-RunShellScript" --comment "aws s3 cp" --parameters commands="aws s3 cp s3://samrealtimeinsightbucket/rerum_server.war /sam/" --output text --region us-east-2
+    
+    

@@ -998,7 +998,8 @@ public class ObjectAction extends ActionSupport implements ServletRequestAware, 
         // our practice of making a list protects from this.
         if (response.containsHeader("Location")) {
             // add to existing header
-            addLocation = response.getHeader("Location").concat(",").concat(obj.getString("@id"));
+//             addLocation = response.getHeader("Location").concat(",").concat(obj.getString("@id"));
+         addLocation = obj.getString("@id");
         }
         else {
             // no header attached yet

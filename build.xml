@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <project basedir="." default="package" name="rerum_server">
 	<property environment="env" />
 	<property name="project.classes.dir" value="build/classes" />
@@ -49,5 +50,6 @@
 	<!-- <target name="deploy" depends="package">
 		<copy file="${project.war}" todir="${project.deploy.location}" />
 	</target> -->
+
 
 </project>
